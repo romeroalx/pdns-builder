@@ -147,7 +147,7 @@ BUILDER_MODULES=''
 package_match=""
 cache_buster=""
 
-while getopts ":CcKk:V:R:svqm:Pp:b:e:B:L:r:" opt; do
+while getopts ":CcKk:V:R:svqm:Pp:b:e:B:L:r:D:" opt; do
     case $opt in
     C)  dockeropts+=('--no-cache')
         ;;
