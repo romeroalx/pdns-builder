@@ -311,7 +311,7 @@ if [ "${buildmode}" = "docker" ]; then
   image="$iprefix:latest" # TODO: maybe use version instead of latest?
   echo -e "${color_white}Building docker image: ${image}${color_reset}"
 
-  buildcmd=(docker build
+  buildcmd=(docker buildx build
     ${buildargs[@]}
     ${ulimitargs[@]}
     -t "$image" "${dockeropts[@]}" -f "$dockerfilepath" .)
