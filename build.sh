@@ -328,8 +328,12 @@ elif [ "${buildmode}" = "kaniko" ]; then
 fi
 [ -z "$quiet" ] && echo "+ ${buildcmd[*]}"
 
-# If $dryrun = 1 then just print the generated Dockerfile and exit
-[ "$dryrun" = "1" ] && cat $dockerfilepath && exit 0
+# When dryrun=1: save build-args to a file, print the generated Dockerfile and exit
+if [ "$dryrun" = "1" ]; then
+    echo ${buildargs[@]} | sed 's/--arg //g' | sed 's/ /\n/g' > $BUILDER_TMP/${target}-build-args
+    cat $dockerfilepath
+    exit 0
+fi
 
 # All of this basically just runs the docker build command prepared above, but 
 # with all kinds of complexity for friendly console output and logging.
