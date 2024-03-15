@@ -147,7 +147,7 @@ BUILDER_MODULES=''
 package_match=""
 cache_buster=""
 
-while getopts ":CcKk:V:R:svqm:Pp:b:e:B:L:r:D:" opt; do
+while getopts ":D:CcKk:V:R:svqm:Pp:b:e:B:L:r:" opt; do
     case $opt in
     C)  dockeropts+=('--no-cache')
         ;;
@@ -330,7 +330,7 @@ fi
 
 # When dryrun=1: save build-args to a file, print the generated Dockerfile and exit
 if [ "$dryrun" = "1" ]; then
-    echo ${buildargs[@]} | sed 's/--arg //g' | sed 's/ /\n/g' > $BUILDER_TMP/${target}-build-args
+    echo ${buildargs[@]} | sed 's/--build-arg //g' | sed 's/ /\n/g' > $BUILDER_TMP/${target}-build-args
     cat $dockerfilepath
     exit 0
 fi
