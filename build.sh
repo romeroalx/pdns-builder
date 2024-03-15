@@ -99,6 +99,7 @@ usage() {
     echo "  -c              - Enable builder package cache"
     echo "  -s              - Skip install tests"
     echo "  -S              - Force running of install tests, even if this is not a full build"
+    echo "  -D              - Dry-run. Prints the final Dockerfile and exits"
     echo
     echo "Docker mode options, ignored in kaniko mode:"
     echo "  -C              - Run docker build with --no-cache"
@@ -200,6 +201,8 @@ while getopts ":CcKk:V:R:svqm:Pp:b:e:B:L:r:" opt; do
     r)  kanikoargs+=("--registry-mirror=${OPTARG}")
         ;;
     L)  ulimitargs+=("--ulimit" "${OPTARG}")
+        ;;
+    D)  dryrun=1
         ;;
     \?) echo "Invalid option: -$OPTARG" >&2
         usage
@@ -324,6 +327,9 @@ elif [ "${buildmode}" = "kaniko" ]; then
     ${buildargs[@]})
 fi
 [ -z "$quiet" ] && echo "+ ${buildcmd[*]}"
+
+# If $dryrun = 1 then just print the generated Dockerfile and exit
+[ "$dryrun" = "1" ] && cat $dockerfilepath && exit 0
 
 # All of this basically just runs the docker build command prepared above, but 
 # with all kinds of complexity for friendly console output and logging.
