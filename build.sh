@@ -104,6 +104,7 @@ usage() {
     echo "  -C              - Run docker build with --no-cache"
     echo "  -L <limit>=<softlimit>:<hardlimit> - Overrides the default docker daemon ulimits, can be passed more than once"
     echo "  -P              - Run docker build with --pull"
+    echo "  -T TARGETARCH   - Run docker build with --platform=TARGETARCH"
     echo
     echo "Kaniko mode options, ignored in docker mode:"
     echo "  -k URL          - Use URL as the cache for kaniko layers."
@@ -146,7 +147,7 @@ BUILDER_MODULES=''
 package_match=""
 cache_buster=""
 
-while getopts ":CcKk:V:R:svqm:Pp:b:e:B:L:r:" opt; do
+while getopts ":CcKk:V:R:svqm:Pp:b:e:B:L:T:r:" opt; do
     case $opt in
     C)  dockeropts+=('--no-cache')
         ;;
@@ -200,6 +201,14 @@ while getopts ":CcKk:V:R:svqm:Pp:b:e:B:L:r:" opt; do
     r)  kanikoargs+=("--registry-mirror=${OPTARG}")
         ;;
     L)  ulimitargs+=("--ulimit" "${OPTARG}")
+        ;;
+    T)  export TARGETARCH=${OPTARG}
+        # TODO: support additional architectures besides linux/arm64 and linux/amd64
+        [[ "${TARGETARCH}" == "linux/arm64/v8" ]] && export TARGETARCH=linux/arm64
+        builder_arch=$(uname -m)
+        [[ "${builder_arch}" == "amd64" || "${builder_arch}" == "x86_64" ]] && export BUILDERARCH=linux/amd64
+        [[ "${builder_arch}" == "arm64" || "${builder_arch}" == "aarch64" ]] && export BUILDERARCH=linux/arm64
+        dockeropts+=("--platform=${TARGETARCH}")
         ;;
     \?) echo "Invalid option: -$OPTARG" >&2
         usage
